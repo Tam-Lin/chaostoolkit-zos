@@ -19,6 +19,10 @@ environment where [chaostoolkit][] already lives.
 $ pip install -U chaostoolkit-zos
 ```
 
+In addition, in order to communicate with z/OS, you will need to use either the z/OSMF Console Services REST interface, the [z/OS Open Automation Utility][zoau] will need to be installed on the z/OS image you will be connecting to, or you will need to be able to connect to the HMC/SE to use the HMC console interfaces.
+
+[zoau]: https://www.ibm.com/support/knowledgecenter/en/SSKFYE_1.0.1/program_directory_zoautil/hal5100.html
+
 ## Usage
 
 To use the probes and actions from this package, add the following to your
