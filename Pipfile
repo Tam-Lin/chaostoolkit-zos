@@ -4,6 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+chaostoolkit-lib = ">=1.1.2"
+logzero = "*"
 zhmcclient = "*"
 
 [dev-packages]
