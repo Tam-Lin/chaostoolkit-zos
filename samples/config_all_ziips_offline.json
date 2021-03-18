@@ -1,0 +1,75 @@
+{
+  "version": "1.0.0",
+  "title": "What happens if I run out of zIIP capacity?",
+  "description": "Even if I have no zIIPs, my system should still function.",
+  "tags": [
+    "zos",
+    "ziip"
+  ],
+  "steady-state-hypothesis": {
+    "title": "Application responds",
+    "probes": [
+      {
+        "type": "probe",
+        "name": "zos-is-processing-work",
+        "tolerance": true,
+        "provider": {
+          "type": "python",
+          "module": "os.path",
+          "func": "exists",
+          "arguments": {
+            "path": "astre.pid"
+          }
+        }
+      }
+    ]
+  },
+  "method": [
+    {
+      "type": "action",
+      "name": "configure_all_ziips",
+      "provider": {
+        "type": "python",
+        "module": "chaoszos.zos.actions",
+        "func": "configure_zIIPs",
+        "arguments": {
+          "location": "M89 S5C",
+          "status": "offline"
+        }
+      }
+    }
+  ],
+  "rollbacks": [
+    {
+      "type": "action",
+      "name": "configure_all_ziips",
+      "provider": {
+        "type": "python",
+        "module": "chaoszos.zos.actions",
+        "func": "configure_zIIPs",
+        "arguments": {
+          "location": "M89 S5C",
+          "status": "online"
+        }
+      }
+      ],
+      "secrets": [
+        {
+          "zos_console": {
+            "M89 S5C": {
+              "method": "HMC",
+              "hostname": "ioshmc3.pok.stglabs.ibm.com",
+              "userid": {
+                "type": "env",
+                "key": "ioshmc3_userid"
+              },
+              "password": {
+                "type": "env",
+                "key": "ioshmc3_password"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }

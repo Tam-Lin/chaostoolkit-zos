@@ -20,15 +20,17 @@ Example that shows how to send a system command.
 import sys
 import re
 
-from send_command import Send_Command
+from chaoslib.discovery.discover import (discover_actions, discover_probes,
+                                         initialize_discovery_result)
+from chaoslib.exceptions import DiscoveryFailed, InterruptExecution
+from chaoslib.types import (Configuration, DiscoveredActivities,
+                            DiscoveredSystemInfo, Discovery, Secrets)
 
+import secrets
 
-if len(sys.argv) != 2:
-    print("Usage: %s hmccreds.json" % sys.argv[0])
-    sys.exit(2)
-hmccreds_location = sys.argv[1]
+from __send_zos_command import Send_Command
 
-dmcore = Send_Command(hmccreds_location, "D M=CORE", "IEE174I")
+dmcore = Send_Command(target, secrets['zos_console'],  "D M=CORE", "IEE174I")
 
 core_re = re.compile("(?P<coreid>[0-9A-F]{4})  (?P<wlmmanaged>.)(?P<online>.)(?P<type>.)  (?P<lowcp>[0-9A-F]{4})-(?P<highcp>[0-9A-F]{4})(  (?P<polarity>.)(?P<parked>.)  (?P<subclassmask>[0-9A-F]{4})  (?P<state1>.)(?P<state2>.))?")
 
