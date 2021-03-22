@@ -27,13 +27,13 @@ def configure_processors(configuration: Configuration = None, secrets: Secrets =
     :return:
     """
 
-    if processor_type is not None and processor_type is not "ziip" and processor_type is not "cp":
-        raise InterruptExecution("Invalid CP type specified")
+    if processor_type is not None and processor_type != "ziip" and processor_type != "cp":
+        raise InterruptExecution("Invalid processor type specified")
 
-    if status is not "online" and status is not "offline":
+    if status != "online" and status != "offline":
         raise InterruptExecution("Action must be online or offline")
 
-    if processor_count is None and (processor_type is None or processor_type is "cp") and status is "offline":
+    if processor_count is None and (processor_type is None or processor_type == "cp") and status == "offline":
         raise InterruptExecution("Can not configure all CPs offline")
 
     if location is None:
@@ -60,15 +60,14 @@ def configure_processors(configuration: Configuration = None, secrets: Secrets =
 
             core_list.append(core)
 
-    #really can clean you up
+    #really can clean you up; need to deal with CORE and CPU variations
     for core in core_list:
         logger.debug(core)
 
         if (processor_type == "ziip" and core["type"] == "I") or (processor_type == "cp" and core["type"] == "C"):
             if (status == "offline" and core["online"] == "+") or (status == "online" and core["online"] == "-"):
                 logger.info("Configuring CORE " + core["coreid"] + status)
-                configure_command = Send_Command(location, secrets[location], "CF CORE(" + core["coreid"] + ")," + status, None)
+                configure_command = Send_Command(location, secrets[location], "CF CORE(" + core["coreid"] + ")," + status, "IEE712I")
 
-        and core["online"] == "+"):
 
-    pass
+

@@ -29,9 +29,7 @@ author = "Kevin McKenzie"
 author_email = 'kmckenzi@us.ibm.com'
 url = 'http://chaostoolkit.org'
 license = 'Apache License Version 2.0'
-packages = [
-    'chaostoolkit_zos'
-]
+packages = setuptools.find_packages(include=['chaoszos', 'chaoszos.*'])
 
 needs_pytest = set(['pytest', 'test']).intersection(sys.argv)
 pytest_runner = ['pytest_runner'] if needs_pytest else []

@@ -21,11 +21,11 @@ class Send_Command():
 
         if connection_information["method"] == "hmc":
 
-            hmc = connection_information["target"]
+            hmc = connection_information["hostname"]
             userid = connection_information["userid"]
             password = connection_information["password"]
 
-            logger.debug("Trying to connect to HMC %s with userid %s" % ("target", "userid"))
+            logger.debug("Trying to connect to HMC %s with userid %s" % (hmc, userid))
 
             try:
                 session = zhmcclient.Session(hmc, userid, password)
@@ -50,24 +50,21 @@ class Send_Command():
                     partkind = "LPAR"
                     partition = cpc.lpars.find(name=partname)
             except zhmcclient.NotFound:
-                print("Could not find %s %s on CPC %s" % (partkind, partname, cpcname))
-                sys.exit(1)
+                raise InterruptExecution("Could not find %s %s on CPC %s" % (partkind, partname, cpcname))
 
         else:
             raise InterruptExecution("Invalid connection method specified")
 
-
-
-        print("Sending command %s for %s %s on CPC %s ..." %
+        logger.info("Sending command %s for %s %s on CPC %s ..." %
               (command_to_send, partkind, partname, cpcname))
 
         if message_to_watch_for is not None:
 
             topic = partition.open_os_message_channel(include_refresh_messages=True)
-            print("OS message channel topic: %s" % topic)
+            logger.debug("OS message channel topic: %s" % topic)
 
             receiver = zhmcclient.NotificationReceiver(topic, hmc, userid, password)
-            print("Showing OS messages (including refresh messages) ...")
+            logger.debug("Showing OS messages (including refresh messages) ...")
             sys.stdout.flush()
 
         try:
@@ -87,7 +84,7 @@ class Send_Command():
                                 held = os_msg['is-held']
                                 priority = os_msg['is-priority']
                                 prompt = os_msg.get('prompt-text', None)
-                                print("# OS message %s (held: %s, priority: %s, prompt: %r):" %
+                                logger.debug("# OS message %s (held: %s, priority: %s, prompt: %r):" %
                                       (msg_id, held, priority, prompt))
                             msg_txt = os_msg['message-text'].strip('\n')
                             os_msg_id = msg_txt.split()[0]
@@ -99,14 +96,14 @@ class Send_Command():
                 print("Keyboard interrupt - leaving receiver loop")
                 sys.stdout.flush()
             except NameError:
-                print("Message with ID %s occurred - leaving receiver loop" % message_to_watch_for)
+                logger.debug("Message with ID %s occurred - leaving receiver loop" % message_to_watch_for)
                 sys.stdout.flush()
             finally:
-                print("Closing receiver...")
+                logger.info("Closing receiver...")
                 sys.stdout.flush()
                 receiver.close()
 
-        print("Logging off...")
+        logger.info("Logging off...")
         sys.stdout.flush()
         session.logoff()
 
