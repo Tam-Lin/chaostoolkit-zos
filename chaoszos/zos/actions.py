@@ -9,6 +9,8 @@ import re
 
 from chaoszos.__send_zos_command import Send_Command
 
+__all__ = ["configure_processors"]
+
 def configure_processors(configuration: Configuration = None, secrets: Secrets = None, processor_type: str = None,
                          processor_count: int = None, status: str = None, location: str = None):
 
@@ -20,10 +22,10 @@ def configure_processors(configuration: Configuration = None, secrets: Secrets =
 
     :param configuration:
     :param secrets:
-    :param processor_type:
+    :param processor_type: Type of processors to configure offline.  Can be None, cp, or ziip
     :param processor_count:  The number of processors to configure
-    :param status:
-    :param location:
+    :param status:  Intended final configuration
+    :param location:  The image you want to configure processors
     :return:
     """
 
@@ -31,7 +33,7 @@ def configure_processors(configuration: Configuration = None, secrets: Secrets =
         raise InterruptExecution("Invalid processor type specified")
 
     if status != "online" and status != "offline":
-        raise InterruptExecution("Action must be online or offline")
+        raise InterruptExecution("Status must be online or offline")
 
     if processor_count is None and (processor_type is None or processor_type == "cp") and status == "offline":
         raise InterruptExecution("Can not configure all CPs offline")
@@ -46,7 +48,7 @@ def configure_processors(configuration: Configuration = None, secrets: Secrets =
 
     core_list = list()
 
-    for line in dmcore.message_out.splitlines()[3:]:
+    for line in dmcore.message_out[3:]:
 
         core_info = core_re.search(line)
 
