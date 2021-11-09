@@ -1,0 +1,82 @@
+{
+  "version": "1.0.0",
+  "title": "What happens if I run out of zIIP capacity?",
+  "description": "Even if I have no zIIPs, my system should still function.",
+  "tags": [
+    "zos",
+    "ziip"
+  ],
+  "steady-state-hypothesis": {
+    "title": "Application responds",
+    "probes": [
+      {
+        "type": "probe",
+        "name": "zos-is-processing-work",
+        "tolerance": true,
+        "provider": {
+          "type": "python",
+          "module": "os.path",
+          "func": "exists",
+          "arguments": {
+            "path": "."
+          }
+        }
+      }
+    ]
+  },
+  "method": [
+    {
+      "type": "action",
+      "name": "configure_all_ziips_offline",
+      "provider": {
+        "type": "python",
+        "module": "chaoszos.zos.actions",
+        "func": "configure_processors",
+        "secrets": [
+          "zos_console"
+        ],
+        "arguments": {
+          "location": "S5C",
+          "processor_type": "ziip",
+          "status": "offline"
+        }
+      }
+    }
+  ],
+  "rollbacks": [
+    {
+      "type": "action",
+      "name": "configure_all_ziips_online",
+      "provider": {
+        "type": "python",
+        "secrets": [
+          "zos_console"
+        ],
+        "module": "chaoszos.zos.actions",
+        "func": "configure_processors",
+        "arguments": {
+          "location": "S5C",
+          "processor_type": "ziip",
+          "status": "online"
+        }
+      }
+    }
+  ],
+  "secrets": {
+    "zos_console": {
+      "S5C": {
+        "method": "ssh",
+        "hostname": "pksts5c.pok.stglabs.ibm.com",
+        "userid": {
+          "type": "env",
+          "key": "S5C_USERID"
+        },
+        "password": {
+          "type": "env",
+          "key": "S5C_PASSWORD"
+        }
+      }
+    }
+  }
+}
+

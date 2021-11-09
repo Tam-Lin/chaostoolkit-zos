@@ -105,6 +105,38 @@ class Send_Command():
             sys.stdout.flush()
             session.logoff()
 
+        elif connection_information["method"] == "ssh":
+
+            from paramiko import SSHClient, SSHException
+
+            hostname = connection_information["hostname"]
+            userid = connection_information["userid"]
+            password = connection_information.get("password")
+
+            hostname = "cb8a.pok.stglabs.ibm.com"
+
+            try:
+                client = SSHClient()
+                client.load_system_host_keys()
+                client.connect(hostname=hostname, username=userid, password=password)
+            except SSHException:
+                logger.warning("SSH Exception")
+                raise()
+
+            logger.debug('bash -l -c \'opercmd -- \"%s\"\'' % self.command_to_send)
+
+            stdin, stdout, stderr = client.exec_command('bash -l -c \'opercmd -- \"%s\"\'' % self.command_to_send)
+
+            for line in stdout:
+                self.message_out.append(line.rstrip())
+
+            logger.debug(self.message_out)
+
+            client.close()
+
+            self.message_out.pop(0)
+            self.message_out.pop(0)
+
         else:
             raise InterruptExecution("Invalid connection method specified")
 
