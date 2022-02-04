@@ -113,8 +113,6 @@ class Send_Command():
             userid = connection_information["userid"]
             password = connection_information.get("password")
 
-            hostname = "cb8a.pok.stglabs.ibm.com"
-
             try:
                 client = SSHClient()
                 client.load_system_host_keys()
