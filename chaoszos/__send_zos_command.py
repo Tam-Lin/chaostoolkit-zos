@@ -27,13 +27,18 @@ class Send_Command():
 
 
         """
+
+        if command_to_send is None:
+            raise EmptyCommand
+
         self.command_to_send = command_to_send
         self.message_to_watch_for = message_to_watch_for
         self.message_out = list()
 
         if connection_information["method"] == "hmc":
 
-            # Print metadata for each OS message, before each message            PRINT_METADATA = False
+            # Print metadata for each OS message, before each message
+            PRINT_METADATA = False
 
             hmc = connection_information["hostname"]
             userid = connection_information["userid"]
@@ -41,7 +46,8 @@ class Send_Command():
 
             logger.debug("Trying to connect to HMC %s with userid %s" % (hmc, userid))
 
-            try:                session = zhmcclient.Session(hmc, userid, password)
+            try:
+                session = zhmcclient.Session(hmc, userid, password)
             except zhmcclient.ConnectionError:
                 raise InterruptExecution("Unable to connect to HMC %s" % hmc)
 
@@ -49,6 +55,7 @@ class Send_Command():
             partname = location.split()[1]
 
             cl = zhmcclient.Client(session)
+
             try:
                 cpc = cl.cpcs.find(name=cpcname)
             except zhmcclient.NotFound:
@@ -153,4 +160,9 @@ class TimeoutException(Exception):
     """
     Raised when a command can't be sent in a given time
 
+    """
+
+class EmptyCommand(Exception):
+    """
+    Raised when no command string is given
     """
