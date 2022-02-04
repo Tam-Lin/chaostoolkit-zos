@@ -2,9 +2,6 @@
 
 """Top-level package for chaostoolkit-zos."""
 
-__version__ = '0.1.0'
-
-
 from typing import Any, Dict, List
 
 from chaoslib.discovery.discover import (discover_actions, discover_probes,
@@ -14,6 +11,10 @@ from chaoslib.types import (Configuration, DiscoveredActivities,
                             DiscoveredSystemInfo, Discovery, Secrets)
 
 from logzero import logger
+
+
+__version__ = '0.1.0'
+__all__ = ["__version__", "get_connection_information", "load_exported_activities"]
 
 def get_connection_information(secrets: Secrets = None) -> Dict[str, str]:
     """
