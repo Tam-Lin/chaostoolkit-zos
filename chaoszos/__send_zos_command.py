@@ -11,16 +11,29 @@ from logzero import logger
 
 class Send_Command():
 
+    """
+    Send a command to z/OS.  Because there are a bunch of different ways to do this, this gets sort of ugly.
+    May want to abstract this to its own class/library at some point.
+    """
+
     def __init__(self, location: str = None, connection_information: dict = None, command_to_send=None, message_to_watch_for=None):
 
+        """
+        Sends a command to z/OS
+        :param location:  This is the place to send the command to.  Format will differ based on method
+        :param connection_information:  This is information on how to connect to the method you're sending the command to.
+        :param command_to_send:  The command to send.
+        :param message_to_watch_for:
+
+
+        """
         self.command_to_send = command_to_send
         self.message_to_watch_for = message_to_watch_for
         self.message_out = list()
 
         if connection_information["method"] == "hmc":
 
-            # Print metadata for each OS message, before each message
-            PRINT_METADATA = False
+            # Print metadata for each OS message, before each message            PRINT_METADATA = False
 
             hmc = connection_information["hostname"]
             userid = connection_information["userid"]
