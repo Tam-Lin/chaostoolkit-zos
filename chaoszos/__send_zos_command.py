@@ -3,6 +3,8 @@ import sys
 import logging
 import json
 
+import zhmcclient
+
 from chaoslib.exceptions import InterruptExecution
 
 from logzero import logger
@@ -20,16 +22,13 @@ class Send_Command():
             # Print metadata for each OS message, before each message
             PRINT_METADATA = False
 
-            import zhmcclient
-
             hmc = connection_information["hostname"]
             userid = connection_information["userid"]
             password = connection_information["password"]
 
             logger.debug("Trying to connect to HMC %s with userid %s" % (hmc, userid))
 
-            try:
-                session = zhmcclient.Session(hmc, userid, password)
+            try:                session = zhmcclient.Session(hmc, userid, password)
             except zhmcclient.ConnectionError:
                 raise InterruptExecution("Unable to connect to HMC %s" % hmc)
 
@@ -37,7 +36,6 @@ class Send_Command():
             partname = location.split()[1]
 
             cl = zhmcclient.Client(session)
-
             try:
                 cpc = cl.cpcs.find(name=cpcname)
             except zhmcclient.NotFound:
