@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """chaostoolkit-zos extension builder and installer"""
-
+import os
 import sys
 import io
 
@@ -8,6 +8,24 @@ import setuptools
 
 name = 'chaostoolkit-zos'
 desc = 'Chaos Toolkit Extension for z/OS'
+
+def get_version_from_package() -> str:
+    """
+    Read the package version from the source without importing it.
+    """
+    path = os.path.join(os.path.dirname(__file__), "chaoszos/__init__.py")
+    path = os.path.normpath(os.path.abspath(path))
+    with open(path) as f:
+        for line in f:
+            if line.startswith("__version__"):
+                token, version = line.split(" = ", 1)
+                version = version.replace("'", "").strip()
+                return version
+
+
+name = 'chaostoolkit-zos'
+desc = 'Chaos Toolkit Extension for zos'
+
 
 with io.open('README.md', encoding='utf-8') as strm:
     long_desc = strm.read()

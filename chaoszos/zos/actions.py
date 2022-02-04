@@ -38,10 +38,13 @@ def configure_processors(configuration: Configuration = None, secrets: Secrets =
     if processor_count is None and (processor_type is None or processor_type == "cp") and status == "offline":
         raise InterruptExecution("Can not configure all CPs offline")
 
-    if location is None:
+    if location is None or location is "":
         raise InterruptExecution("No target specified for action")
 
-    dmcore = Send_Command(location, secrets[location], "D M=CORE", "IEE174I")
+    try:
+        dmcore = Send_Command(location, secrets[location], "D M=CORE", "IEE174I")
+    except KeyError:
+        raise InterruptExecution(location + " not found in secrets")
 
     core_re = re.compile(
         "(?P<coreid>[0-9A-F]{4})  (?P<wlmmanaged>.)(?P<online>.)(?P<type>.)  (?P<lowcp>[0-9A-F]{4})-(?P<highcp>[0-9A-F]{4})(  (?P<polarity>.)(?P<parked>.)  (?P<subclassmask>[0-9A-F]{4})  (?P<state1>.)(?P<state2>.))?")
