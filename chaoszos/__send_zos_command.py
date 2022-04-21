@@ -23,8 +23,7 @@ class Send_Command():
         :param location:  This is the place to send the command to.  Format will differ based on method
         :param connection_information:  This is information on how to connect to the method you're sending the command to.
         :param command_to_send:  The command to send.
-        :param message_to_watch_for:
-
+        :param message_to_watch_for: A message id to look for, if a response is expected
 
         """
 

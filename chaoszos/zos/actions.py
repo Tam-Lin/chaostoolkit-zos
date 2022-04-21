@@ -23,9 +23,9 @@ def configure_processors(configuration: Configuration = None, secrets: Secrets =
     :param configuration:
     :param secrets:
     :param processor_type: Type of processors to configure offline.  Can be None, cp, or ziip
-    :param processor_count:  The number of processors to configure
-    :param status:  Intended final configuration
-    :param location:  The image you want to configure processors
+    :param processor_count:  The number of processors to configure; if None, defaults to all processors of that type
+    :param status:  Intended final configuration (offline or online)
+    :param location:  The z/OS image you want to configure processors
     :return:
     """
 
@@ -51,9 +51,15 @@ def configure_processors(configuration: Configuration = None, secrets: Secrets =
 
     core_list = list()
 
+    print(len(dmcore.message_out), flush=True)
+
     for line in dmcore.message_out[3:]:
 
+        print(line, flush=True)
+
         core_info = core_re.search(line)
+
+        print(core_info, flush=True)
 
         if core_info is None:
             break
@@ -67,12 +73,12 @@ def configure_processors(configuration: Configuration = None, secrets: Secrets =
 
     #really can clean you up; need to deal with CORE and CPU variations
     for core in core_list:
-        logger.debug(core)
 
+        logger.debug(core)
         if (processor_type == "ziip" and core["type"] == "I") or (processor_type == "cp" and core["type"] == "C"):
             if (status == "offline" and core["online"] == "+") or (status == "online" and core["online"] == "-"):
-                logger.info("Configuring CORE " + core["coreid"] + status)
-                configure_command = Send_Command(location, secrets[location], "CF CORE(" + core["coreid"] + ")," + status, "IEE712I")
+                logger.info("Configuring CORE " + core["coreid"] + " " + status.upper())
+                configure_command = Send_Command(location, secrets[location], "CF CORE(" + core["coreid"] + ")," + status.upper(), "IEE505I")
 
 
 
