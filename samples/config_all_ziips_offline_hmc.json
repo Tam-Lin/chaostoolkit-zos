@@ -7,7 +7,7 @@
     "ziip"
   ],
   "steady-state-hypothesis": {
-    "title": "Application responds",
+    "title": "Application responds - Dummy function",
     "probes": [
       {
         "type": "probe",
