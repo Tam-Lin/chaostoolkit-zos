@@ -70,7 +70,7 @@ def test_configure_all_ziip_cores_offline(send_command):
 
     send_command.side_effect = [send_command_1, send_command_2, send_command_3, send_command_4, send_command_5]
 
-    configure_processors(processor_type_to_change='ziip', status='offline',
+    configure_processors(processor_type_to_change='ziip', status_to_change_to='offline',
                          location="SYS1", secrets=secrets)
 
     # assert send_command.call_count == 3
@@ -139,7 +139,7 @@ def test_configure_1_ziip_core_offline(send_command):
 
     send_command.side_effect = [send_command_1, send_command_2]
 
-    configure_processors(processor_type_to_change='ziip', status='offline', location="SYS1", secrets=secrets,
+    configure_processors(processor_type_to_change='ziip', status_to_change_to='offline', location="SYS1", secrets=secrets,
                          processor_count_to_change=1)
 
     assert send_command.call_count == 2
@@ -149,19 +149,19 @@ def test_configure_1_ziip_core_offline(send_command):
 
 def test_attempt_to_configure_all_cps_offline():
     with pytest.raises(InterruptExecution) as x:
-        configure_processors(processor_type_to_change="cp", status='offline', location="SYS1")
+        configure_processors(processor_type_to_change="cp", status_to_change_to='offline', location="SYS1")
     assert 'Can not configure all CPs offline' in str(x.value)
 
 def test_configure_invalid_processor_type_to_change():
     with pytest.raises(InterruptExecution) as x:
-        configure_processors(processor_type_to_change="bob", status='offline', location="SYS1")
+        configure_processors(processor_type_to_change="bob", status_to_change_to='offline', location="SYS1")
     assert 'Invalid processor type specified' in str(x.value)
 
 def test_configure_empty_location_offline():
     with pytest.raises(InterruptExecution) as x:
-        configure_processors(processor_type_to_change="ziip", status='offline', location="")
+        configure_processors(processor_type_to_change="ziip", status_to_change_to='offline', location="")
     assert 'No target specified for action' in str(x.value)
 
-# def test_configure_empty_secrets_offline():
-#     with pytest.raises(KeyError) as x:
-#         configure_processors(processor_type_to_change='ziip', status='offline', location='SYS1')
+def test_configure_empty_secrets_offline():
+    with pytest.raises(InterruptExecution) as x:
+        configure_processors(processor_type_to_change='ziip', status_to_change_to='offline', location='SYS1')

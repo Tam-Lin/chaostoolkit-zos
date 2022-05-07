@@ -37,8 +37,8 @@
         ],
         "arguments": {
           "location": "S5C",
-          "processor_type": "ziip",
-          "status": "offline"
+          "processor_type_to_change": "ziip",
+          "status_to_change_to": "offline"
         }
       }
     }
@@ -56,8 +56,8 @@
         "func": "configure_processors",
         "arguments": {
           "location": "S5C",
-          "processor_type": "ziip",
-          "status": "online"
+          "processor_type_to_change": "ziip",
+          "status_to_change_to": "online"
         }
       }
     }

@@ -24,7 +24,7 @@ def get_version_from_package() -> str:
 
 
 name = 'chaostoolkit-zos'
-desc = 'Chaos Toolkit Extension for zos'
+desc = 'Chaos Toolkit Extension for z/OS'
 
 
 with io.open('README.md', encoding='utf-8') as strm:

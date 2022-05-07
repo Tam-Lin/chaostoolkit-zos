@@ -14,7 +14,7 @@ __all__ = ["configure_processors"]
 
 def configure_processors(configuration: Configuration = None, secrets: Secrets = None,
                          processor_type_to_change: str = None,
-                         processor_count_to_change: int = None, status: str = None, location: str = None):
+                         processor_count_to_change: int = None, status_to_change_to: str = None, location: str = None):
 
     """
     Configures processors either offline or online, depending on the action
@@ -26,7 +26,7 @@ def configure_processors(configuration: Configuration = None, secrets: Secrets =
     :param secrets:
     :param processor_type_to_change: Type of processors to configure offline.  Can be None, cp, or ziip
     :param processor_count_to_change:  The number of processors to configure; if None, defaults to all processors of that type
-    :param status:  Intended final configuration (offline or online)
+    :param status_to_change_to:  Intended final configuration (offline or online)
     :param location:  The z/OS image you want to configure processors
     :return:
     """
@@ -34,16 +34,16 @@ def configure_processors(configuration: Configuration = None, secrets: Secrets =
     logger.debug("Configuration: %s" % configuration)
     logger.debug("processor_type_to_change: %s" % processor_type_to_change)
     logger.debug("processor_count_to_change: %s" % processor_count_to_change)
-    logger.debug("status: %s" % status)
+    logger.debug("status: %s" % status_to_change_to)
     logger.debug("location: %s" % location)
 
     if processor_type_to_change is not None and processor_type_to_change != "ziip" and processor_type_to_change != "cp":
         raise InterruptExecution("Invalid processor type specified")
 
-    if status != "online" and status != "offline":
-        raise InterruptExecution("Status must be online or offline")
+    if status_to_change_to != "online" and status_to_change_to != "offline":
+        raise InterruptExecution("status_to_change_to must be online or offline; got %s" % status_to_change_to)
 
-    if processor_count_to_change is None and (processor_type_to_change is None or processor_type_to_change == "cp") and status == "offline":
+    if processor_count_to_change is None and (processor_type_to_change is None or processor_type_to_change == "cp") and status_to_change_to == "offline":
         raise InterruptExecution("Can not configure all CPs offline")
 
     if location is None or location is "":
@@ -53,8 +53,8 @@ def configure_processors(configuration: Configuration = None, secrets: Secrets =
         dmcore = Send_Command(location, secrets[location], "D M=CORE", "IEE174I")
     except KeyError:
         raise InterruptExecution(location + " not found in secrets")
-
-    #As of V2R3, I *think* (need to check) D M=CORE will work either way.  Need to check.
+    except TypeError:
+        raise InterruptExecution("No secrets specified")
 
     test_lpar = LPAR()
 
@@ -62,16 +62,16 @@ def configure_processors(configuration: Configuration = None, secrets: Secrets =
 
     processors_remaining_to_change = processor_count_to_change
 
-    logger.debug("Changing %s prcoessors of type %s to %s" % (processors_remaining_to_change, processor_type_to_change, status))
+    logger.debug("Changing %s prcoessors of type %s to %s" % (processors_remaining_to_change, processor_type_to_change, status_to_change_to))
 
     for (processor_name, processor) in test_lpar.logical_processors.items():
 
         logger.debug(processor)
 
         if (processor_type_to_change == "ziip" and processor.type == "zIIP") or (processor_type_to_change == "cp" and processor.type == "CP"):
-            if (status == "offline" and processor.online == True) or (status == "online" and processor.online == False):
-                logger.info("Configuring CORE " + processor.coreid + " " + status.upper())
-                configure_command = Send_Command(location, secrets[location], "CF CORE(" + processor.coreid + ")," + status.upper(), "IEE505I")
+            if (status_to_change_to == "offline" and processor.online == True) or (status_to_change_to == "online" and processor.online == False):
+                logger.info("Configuring CORE " + processor.coreid + " " + status_to_change_to.upper())
+                configure_command = Send_Command(location, secrets[location], "CF CORE(" + processor.coreid + ")," + status_to_change_to.upper(), "IEE505I")
 
                 if processors_remaining_to_change is not None:
                     processors_remaining_to_change = processors_remaining_to_change - 1
