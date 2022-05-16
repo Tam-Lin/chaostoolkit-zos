@@ -1,7 +1,15 @@
 # [Chaos Toolkit Extension for z/OS]()
 
-This project is a collection of [actions][] and [probes][] to allow the [Chaos Toolkit][chaostoolkit] to interact
-with [z/OS].
+[![Build Status](https://github.com/Tam-Lin/chaostoolkit-/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/chaostoolkit-incubator/chaostoolkit-aws/actions/workflows/build-and-test.yaml)
+[![Python versions](https://img.shields.io/pypi/pyversions/chaostoolkit-aws.svg)](https://www.python.org/)
+
+
+This project is a collection of [actions][] to allow the [Chaos Toolkit][chaostoolkit] to interact
+with [z/OS].  [probes][] are being developed.  This is a very early release, put out for people to experiment with
+and critique.  It is usable, but very limited in scope.  I eventually plan to incorporate tests for program products
+(db2, CICS, IMS, etc), but need feedback to understand what to prioritize.
+
+I will also be adding some overview videos to my [youtube channel][].
 
 [actions]: http://chaostoolkit.org/reference/api/experiment/#action
 
@@ -9,9 +17,11 @@ with [z/OS].
 
 [chaostoolkit]: http://chaostoolkit.org
 
+[youtube channel]: https://www.youtube.com/channel/UC8zR_qG8MnBa1sH8Eu5nL5w
+
 ## Install
 
-This package requires Python 3.5+
+This package requires Python 3.7+
 
 This package needs to be installed in a Python environment where the [chaostoolkit][] is already installed.
 
@@ -50,6 +60,8 @@ REST APIs, or Zowe. Similarly, for submitting jobs, you can use FTP, or zoau, or
 installations have different legal and security requirements that will dictate which methods could be used. As such, the
 toolkit plans to allow multiple ways of doing any of these activities, without needing to change your high level
 experiment. The contents of your secrets will dictate which access method is used for a given experiment.
+
+Right now, two methods are supported for issuing commands:  using an HMC connection, or zoau after connecting via ssh.
 
 ### Credentials
 
@@ -102,6 +114,9 @@ Or, to use the Ansible interface, provided by ZOAU, you could specify
 }
 ```
 
+In both cases, instead of hard-coding the userid and password, you can specify them via environmental variables.  This
+is all handled by the Chaos Toolkit, so any supported method for passing in secrets will work.
+
 ## Contribute
 
 If you wish to contribute more functions to this package, you are welcome to do so. First, fork this project,
@@ -123,7 +138,7 @@ first, [create a virtual environment][venv] and then install those dependencies.
 [venv]: http://chaostoolkit.org/reference/usage/install/#create-a-virtual-environment
 
 ```console
-$ pip install -r requirements-dev.txt -r requirements.txt 
+$ pip install -r requirements-dev.txt -r requirements.txt
 ```
 
 Then, point your environment to this directory:
