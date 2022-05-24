@@ -73,7 +73,7 @@ def test_configure_all_ziip_cores_offline(send_command):
     configure_processors(processor_type_to_change='ziip', status_to_change_to='offline',
                          location="SYS1", secrets=secrets)
 
-    # assert send_command.call_count == 3
+    assert send_command.call_count == 5
 
     send_command.assert_any_call(location="SYS1", connection_information="password1", command_to_send="D M=CORE", message_to_watch_for="IEE174I")
     send_command.assert_any_call(location="SYS1", connection_information="password1", command_to_send="CF CORE(0006),OFFLINE", message_to_watch_for="IEE505I")

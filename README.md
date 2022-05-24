@@ -3,10 +3,9 @@
 [![Build Status](https://github.com/Tam-Lin/chaostoolkit-/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/chaostoolkit-incubator/chaostoolkit-aws/actions/workflows/build-and-test.yaml)
 [![Python versions](https://img.shields.io/pypi/pyversions/chaostoolkit-aws.svg)](https://www.python.org/)
 
-
-This project is a collection of [actions][] to allow the [Chaos Toolkit][chaostoolkit] to interact
-with [z/OS].  [probes][] are being developed.  This is a very early release, put out for people to experiment with
-and critique.  It is usable, but very limited in scope.  I eventually plan to incorporate tests for program products
+This project is a collection of [actions][] and [probes][]to allow the [Chaos Toolkit][chaostoolkit] to interact
+with [z/OS]. This is a very early release, put out for people to experiment with
+and critique. It is usable, but very limited in scope. I eventually plan to incorporate tests for program products
 (db2, CICS, IMS, etc), but need feedback to understand what to prioritize.
 
 I will also be adding some overview videos to my [youtube channel][].
@@ -33,20 +32,21 @@ To use the actions in the package, add the following to your experiment file:
 
 ```json
 {
-  "name": "configure_all_ziips_offline",
-  "provider": {
-    "type": "python",
-    "module": "chaoszos.zos.actions",
-    "func": "configure_processors",
-    "secrets": [
-      "zos_console"
-    ],
-    "arguments": {
-      "location": "S5C",
-      "processor_type": "ziip",
-      "status": "offline"
+    "type": "action",
+    "name": "configure_all_ziips_offline",
+    "provider": {
+        "type": "python",
+        "module": "chaoszos.zos.actions",
+        "func": "configure_processors",
+        "secrets": [
+            "zos_console"
+        ],
+        "arguments": {
+            "location": "M89 S5C",
+            "processor_type_to_change": "ziip",
+            "status_to_change_to": "offline"
+        }
     }
-  }
 }
 ```
 
@@ -72,22 +72,22 @@ hmc to issue commands in the above sample, you could specify
 
 ```json
 {
-  "secrets": {
-    "zos_console": {
-      "S5C": {
-        "method": "hmc",
-        "hostname": "ioshmc3.pok.stglabs.ibm.com",
-        "userid": {
-          "type": "env",
-          "key": "IOSHMC3_USERID"
-        },
-        "password": {
-          "type": "env",
-          "key": "IOSHMC3_PASSWORD"
+    "secrets": {
+        "zos_console": {
+            "S5C": {
+                "method": "hmc",
+                "hostname": "ioshmc3.pok.stglabs.ibm.com",
+                "userid": {
+                    "type": "env",
+                    "key": "IOSHMC3_USERID"
+                },
+                "password": {
+                    "type": "env",
+                    "key": "IOSHMC3_PASSWORD"
+                }
+            }
         }
-      }
     }
-  }
 }
 ```
 
@@ -95,32 +95,39 @@ Or, to use the Ansible interface, provided by ZOAU, you could specify
 
 ```json
 {
-  "secrets": {
-    "zos_console": {
-      "S5C": {
-        "method": "ansible",
-        "hostname": "pksts5c.pok.stglabs.ibm.com",
-        "userid": {
-          "type": "env",
-          "key": "S5C_USERID"
-        },
-        "password": {
-          "type": "env",
-          "key": "S5C_PASSWORD"
+    "secrets": {
+        "zos_console": {
+            "S5C": {
+                "method": "ansible",
+                "hostname": "pksts5c.pok.stglabs.ibm.com",
+                "userid": {
+                    "type": "env",
+                    "key": "S5C_USERID"
+                },
+                "password": {
+                    "type": "env",
+                    "key": "S5C_PASSWORD"
+                }
+            }
         }
-      }
     }
-  }
 }
 ```
 
-In both cases, instead of hard-coding the userid and password, you can specify them via environmental variables.  This
+In both cases, instead of hard-coding the userid and password, you can specify them via environmental variables. This
 is all handled by the Chaos Toolkit, so any supported method for passing in secrets will work.
+
+If you are using certificates signed by an internal/private certificate authority, you may have problems connecting
+to your HMC. If this is the case, you can work around the problem by setting environmental variable REQUESTS_CA_BUNDLE
+to the location of the signing certificate. Note that this will then cause problems in contacting pypi.
 
 ## Contribute
 
 If you wish to contribute more functions to this package, you are welcome to do so. First, fork this project,
-make your changes following the usual [PEP 8][pep8] code style, add tests and submit a PR for review.  Or, if you'd like to be able to do somehting with the Chaos Toolkit, but don't know how to do it via code, feel free to submit a problem report, and I'll see what I can figure out.  I'm hoping to add support for z/OS subsystems (CICS, Db2, IMS, etc), but my exptertise is in z/OS, so I need to understand what sorts of things you'd like to be able to do.
+make your changes following the usual [PEP 8][pep8] code style, add tests and submit a PR for review. Or, if you'd like
+to be able to do somehting with the Chaos Toolkit, but don't know how to do it via code, feel free to submit a problem
+report, and I'll see what I can figure out. I'm hoping to add support for z/OS subsystems (CICS, Db2, IMS, etc), but my
+exptertise is in z/OS, so I need to understand what sorts of things you'd like to be able to do.
 
 [pep8]: https://pycodestyle.readthedocs.io/en/latest/
 
