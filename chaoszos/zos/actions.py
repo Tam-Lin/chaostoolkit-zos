@@ -40,18 +40,18 @@ def configure_processors(configuration: Configuration = None,
     logger.debug("status: %s" % status_to_change_to)
     logger.debug("location: %s" % location)
 
-    if all(processor_type_to_change is not None,
+    if all((processor_type_to_change is not None,
            processor_type_to_change != "ziip",
-           processor_type_to_change != "cp"):
+           processor_type_to_change != "cp")):
         raise InterruptExecution("Invalid processor type specified")
 
     if status_to_change_to != "online" and status_to_change_to != "offline":
         raise InterruptExecution("status_to_change_to must be online or offline; "
                                  "got %s" % status_to_change_to)
 
-    if processor_count_to_change is None and \
-        (processor_type_to_change is None or processor_type_to_change == "cp") and \
-        status_to_change_to == "offline":
+    if all((processor_count_to_change is None,
+           (processor_type_to_change is None or processor_type_to_change == "cp"),
+            status_to_change_to == "offline")):
         raise InterruptExecution("Can not configure all CPs offline")
 
     if location is None or location == "":
@@ -73,7 +73,7 @@ def configure_processors(configuration: Configuration = None,
 
     processors_remaining_to_change = processor_count_to_change
 
-    logger.debug("Changing %s prcoessors of type %s to %s" %
+    logger.debug("Changing %s processors of type %s to %s" %
                  (processors_remaining_to_change,
                   processor_type_to_change,
                   status_to_change_to))
@@ -83,22 +83,20 @@ def configure_processors(configuration: Configuration = None,
         logger.debug(processor)
 
         if (processor_type_to_change == "ziip" and processor.type == "zIIP") or \
-              (processor_type_to_change == "cp" and processor.type == "CP"):
-            if (status_to_change_to == "offline" and processor.online == True) or \
-                (status_to_change_to == "online" and processor.online == False):
-                logger.info("Configuring CORE " + processor.coreid + " " +
-                            status_to_change_to.upper())
-                command = ("CF CORE(" + processor.coreid + ")," +
-                           status_to_change_to.upper())
-                configure_command = Send_Command(location,
-                                                 secrets[location],
-                                                 command,
-                                                 "IEE505I")
+           (processor_type_to_change == "cp" and processor.type == "CP"):
+            if any(((status_to_change_to == "offline" and processor.online is True),
+                   (status_to_change_to == "online" and processor.online is False))):
+                logger.info("Configuring CORE %s %s" %
+                            (processor.coreid, status_to_change_to.upper()))
+                command = ("CF CORE(%s),%s" %
+                           (processor.coreid, status_to_change_to.upper()))
+                Send_Command(location, secrets[location], command, "IEE505I")
 
                 if processors_remaining_to_change is not None:
                     processors_remaining_to_change = processors_remaining_to_change - 1
 
-                    logger.debug("%s processors left to change" % (processors_remaining_to_change))
+                    logger.debug("%s processors left to change" %
+                                 (processors_remaining_to_change))
 
-        if processors_remaining_to_change is 0:
+        if processors_remaining_to_change == 0:
             break

@@ -2,8 +2,6 @@ from unittest.mock import MagicMock, patch
 
 from chaoszos.zos.probes import is_responding
 
-import pytest
-
 
 @patch('chaoszos.zos.probes.Send_Command', autospec=True)
 def test_is_responding_works(send_command):

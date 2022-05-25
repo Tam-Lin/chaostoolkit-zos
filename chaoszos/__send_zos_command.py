@@ -49,6 +49,7 @@ class Send_Command():
             try:
                 session = zhmcclient.Session(hmc, userid, password)
             except zhmcclient.ConnectionError:
+                logger.error("Unable to connect to HMC %s" % hmc)
                 raise InterruptExecution("Unable to connect to HMC %s" % hmc)
 
             cpcname = location.split()[0]
