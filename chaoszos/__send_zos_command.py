@@ -1,7 +1,4 @@
-
 import sys
-import logging
-import json
 
 import zhmcclient
 
@@ -9,19 +6,23 @@ from chaoslib.exceptions import InterruptExecution
 
 from logzero import logger
 
-class Send_Command():
 
+class Send_Command():
     """
-    Send a command to z/OS.  Because there are a bunch of different ways to do this, this gets sort of ugly.
+    Send a command to z/OS.  Because there are a bunch of different ways to do this,
+    this gets sort of ugly.
     May want to abstract this to its own class/library at some point.
     """
 
-    def __init__(self, location: str = None, connection_information: dict = None, command_to_send=None, message_to_watch_for=None):
+    def __init__(self, location: str = None, connection_information: dict = None,
+                 command_to_send=None, message_to_watch_for=None):
 
         """
         Sends a command to z/OS
-        :param location:  This is the place to send the command to.  Format will differ based on method
-        :param connection_information:  This is information on how to connect to the method you're sending the command to.
+        :param location:  This is the place to send the command to.  Format will differ
+        based on method
+        :param connection_information:  This is information on how to connect to the
+        method you're sending the command to.
         :param command_to_send:  The command to send.
         :param message_to_watch_for: A message id to look for, if a response is expected
 
@@ -58,7 +59,8 @@ class Send_Command():
             try:
                 cpc = cl.cpcs.find(name=cpcname)
             except zhmcclient.NotFound:
-                raise InterruptExecution("Could not find CPC %s on HMC %s" % (cpcname, hmc))
+                raise InterruptExecution("Could not find CPC %s on HMC %s" %
+                                         (cpcname, hmc))
 
             try:
                 if cpc.dpm_enabled:
@@ -68,13 +70,13 @@ class Send_Command():
                     partkind = "LPAR"
                     partition = cpc.lpars.find(name=partname)
             except zhmcclient.NotFound:
-                raise InterruptExecution("Could not find %s %s on CPC %s" % (partkind, partname, cpcname))
+                raise InterruptExecution("Could not find %s %s on CPC %s" %
+                                         (partkind, partname, cpcname))
 
             logger.info("Sending command %s for %s %s on CPC %s ..." %
-                  (command_to_send, partkind, partname, cpcname))
+                        (command_to_send, partkind, partname, cpcname))
 
             if message_to_watch_for is not None:
-
                 topic = partition.open_os_message_channel(include_refresh_messages=True)
                 logger.debug("OS message channel topic: %s" % topic)
 
@@ -84,34 +86,34 @@ class Send_Command():
 
             try:
                 partition.send_os_command(command_to_send)
-            except:
+            except zhmcclient.Error:
                 raise InterruptExecution("Command failed")
 
             if message_to_watch_for is not None:
                 try:
                     for headers, message in receiver.notifications():
-                            # print("# HMC notification #%s:" % headers['session-sequence-nr'])
-                            # sys.stdout.flush()
-                            os_msg_list = message['os-messages']
-                            for os_msg in os_msg_list:
-                                if PRINT_METADATA:
-                                    msg_id = os_msg['message-id']
-                                    held = os_msg['is-held']
-                                    priority = os_msg['is-priority']
-                                    prompt = os_msg.get('prompt-text', None)
-                                    logger.debug("# OS message %s (held: %s, priority: %s, prompt: %r):" %
-                                          (msg_id, held, priority, prompt))
-                                msg_txt = os_msg['message-text'].strip('\n')
-                                os_msg_id = msg_txt.split()[0]
-                                sys.stdout.flush()
-                                if os_msg_id == message_to_watch_for:
-                                    self.message_out = msg_txt.splitlines()
-                                    raise NameError
+                        os_msg_list = message['os-messages']
+                        for os_msg in os_msg_list:
+                            if PRINT_METADATA:
+                                msg_id = os_msg['message-id']
+                                held = os_msg['is-held']
+                                priority = os_msg['is-priority']
+                                prompt = os_msg.get('prompt-text', None)
+                                logger.debug("# OS message %s (held: %s, priority: %s, "
+                                             "prompt: %r):" %
+                                             (msg_id, held, priority, prompt))
+                            msg_txt = os_msg['message-text'].strip('\n')
+                            os_msg_id = msg_txt.split()[0]
+                            sys.stdout.flush()
+                            if os_msg_id == message_to_watch_for:
+                                self.message_out = msg_txt.splitlines()
+                                raise NameError
                 except KeyboardInterrupt:
                     logger.debug("Keyboard interrupt - leaving receiver loop")
                     sys.stdout.flush()
                 except NameError:
-                    logger.debug("Message with ID %s occurred - leaving receiver loop" % message_to_watch_for)
+                    logger.debug("Message with ID %s occurred - leaving receiver loop" %
+                                 message_to_watch_for)
                     sys.stdout.flush()
                 finally:
                     logger.info("Closing receiver...")
@@ -136,11 +138,13 @@ class Send_Command():
                 client.connect(hostname=hostname, username=userid, password=password)
             except SSHException:
                 logger.warning("SSH Exception")
-                raise()
+                raise ()
 
-            logger.debug('bash -l -c \'opercmd -- \"%s\"\'' % self.command_to_send)
+            string_to_send = ('bash -l -c \'opercmd -- \"%s\"\'' % self.command_to_send)
 
-            stdin, stdout, stderr = client.exec_command('bash -l -c \'opercmd -- \"%s\"\'' % self.command_to_send)
+            logger.debug(string_to_send)
+
+            stdin, stdout, stderr = client.exec_command(string_to_send)
 
             for line in stdout:
                 self.message_out.append(line.rstrip())
@@ -155,11 +159,13 @@ class Send_Command():
         else:
             raise InterruptExecution("Invalid connection method specified")
 
+
 class TimeoutException(Exception):
     """
     Raised when a command can't be sent in a given time
 
     """
+
 
 class EmptyCommand(Exception):
     """

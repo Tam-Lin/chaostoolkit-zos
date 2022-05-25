@@ -1,9 +1,9 @@
 # [Chaos Toolkit Extension for z/OS]()
 
-[![Build Status](https://github.com/Tam-Lin/chaostoolkit-/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/chaostoolkit-incubator/chaostoolkit-aws/actions/workflows/build-and-test.yaml)
-[![Python versions](https://img.shields.io/pypi/pyversions/chaostoolkit-aws.svg)](https://www.python.org/)
+[![Build Status](https://github.com/Tam-Lin/chaostoolkit-zos/actions/workflows/build-and-test.yaml/badge.svg)](https://github.com/Tam-Lin/chaostoolkit-zos/actions/workflows/build-and-test.yaml)
+[![Python versions](https://img.shields.io/pypi/pyversions/chaostoolkit-zos.svg)](https://www.python.org/)
 
-This project is a collection of [actions][] and [probes][]to allow the [Chaos Toolkit][chaostoolkit] to interact
+This project is a collection of [actions][] and [probes][] to allow the [Chaos Toolkit][chaostoolkit] to interact
 with [z/OS]. This is a very early release, put out for people to experiment with
 and critique. It is usable, but very limited in scope. I eventually plan to incorporate tests for program products
 (db2, CICS, IMS, etc), but need feedback to understand what to prioritize.
@@ -42,7 +42,7 @@ To use the actions in the package, add the following to your experiment file:
             "zos_console"
         ],
         "arguments": {
-            "location": "M89 S5C",
+            "location": "S5C",
             "processor_type_to_change": "ziip",
             "status_to_change_to": "offline"
         }
@@ -91,26 +91,26 @@ hmc to issue commands in the above sample, you could specify
 }
 ```
 
-Or, to use the Ansible interface, provided by ZOAU, you could specify
+Or, to use the ssh interface, provided by ZOAU, you could specify
 
 ```json
 {
-    "secrets": {
-        "zos_console": {
-            "S5C": {
-                "method": "ansible",
-                "hostname": "pksts5c.pok.stglabs.ibm.com",
-                "userid": {
-                    "type": "env",
-                    "key": "S5C_USERID"
-                },
-                "password": {
-                    "type": "env",
-                    "key": "S5C_PASSWORD"
-                }
-            }
+  "secrets": {
+    "zos_console": {
+      "S5C": {
+        "method": "ssh",
+        "hostname": "pksts5c.pok.stglabs.ibm.com",
+        "userid": {
+          "type": "env",
+          "key": "S5C_USERID"
+        },
+        "password": {
+          "type": "env",
+          "key": "S5C_PASSWORD"
         }
+      }
     }
+  }
 }
 ```
 
@@ -125,7 +125,7 @@ to the location of the signing certificate. Note that this will then cause probl
 
 If you wish to contribute more functions to this package, you are welcome to do so. First, fork this project,
 make your changes following the usual [PEP 8][pep8] code style, add tests and submit a PR for review. Or, if you'd like
-to be able to do somehting with the Chaos Toolkit, but don't know how to do it via code, feel free to submit a problem
+to be able to do something with the Chaos Toolkit, but don't know how to do it via code, feel free to submit a problem
 report, and I'll see what I can figure out. I'm hoping to add support for z/OS subsystems (CICS, Db2, IMS, etc), but my
 exptertise is in z/OS, so I need to understand what sorts of things you'd like to be able to do.
 

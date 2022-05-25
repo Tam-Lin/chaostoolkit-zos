@@ -9,6 +9,7 @@ import setuptools
 name = 'chaostoolkit-zos'
 desc = 'Chaos Toolkit Extension for z/OS'
 
+
 def get_version_from_package() -> str:
     """
     Read the package version from the source without importing it.
@@ -56,11 +57,11 @@ pytest_runner = ['pytest_runner'] if needs_pytest else []
 
 test_require = []
 with io.open('requirements-dev.txt') as f:
-    test_require = [l.strip() for l in f if not l.startswith('#')]
+    test_require = [line.strip() for line in f if not line.startswith('#')]
 
 install_require = []
 with io.open('requirements.txt') as f:
-    install_require = [l.strip() for l in f if not l.startswith('#')]
+    install_require = [line.strip() for line in f if not line.startswith('#')]
 
 setup_params = dict(
     name=name,
@@ -77,7 +78,7 @@ setup_params = dict(
     install_requires=install_require,
     tests_require=test_require,
     setup_requires=pytest_runner,
-    python_requires='>=3.6.*'
+    python_requires='>=3.7.*'
 )
 
 

@@ -1,5 +1,7 @@
+bump2version
 coverage
 pycodestyle
+flake8
 pytest>=6.0
 pytest-cov
 pytest-sugar

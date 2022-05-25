@@ -21,7 +21,7 @@
                         "zos_console"
                     ],
                     "arguments": {
-                        "location": "M89 S5C"
+                        "location": "S56"
                     }
                 }
             }
@@ -39,7 +39,7 @@
                     "zos_console"
                 ],
                 "arguments": {
-                    "location": "M89 S5C",
+                    "location": "S56",
                     "processor_type_to_change": "ziip",
                     "status_to_change_to": "offline"
                 }
@@ -58,7 +58,7 @@
                 "module": "chaoszos.zos.actions",
                 "func": "configure_processors",
                 "arguments": {
-                    "location": "M89 S5C",
+                    "location": "S56",
                     "processor_type_to_change": "ziip",
                     "status_to_change_to": "online"
                 }
@@ -67,7 +67,7 @@
     ],
     "secrets": {
         "zos_console": {
-            "M89 S5C": {
+            "S56": {
                 "method": "hmc",
                 "hostname": "ioshmc3.pok.stglabs.ibm.com",
                 "userid": {
