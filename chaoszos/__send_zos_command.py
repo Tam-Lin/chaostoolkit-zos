@@ -52,8 +52,8 @@ class Send_Command():
                 logger.error("Unable to connect to HMC %s" % hmc)
                 raise InterruptExecution("Unable to connect to HMC %s" % hmc)
 
-            cpcname = location.split()[0]
-            partname = location.split()[1]
+            cpcname = connection_information["cpc_name"]
+            partname = connection_information["partition_name"]
 
             cl = zhmcclient.Client(session)
 

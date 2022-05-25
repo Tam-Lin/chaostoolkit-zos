@@ -74,6 +74,8 @@
                     "type": "env",
                     "key": "IOSHMC3_USERID"
                 },
+                "cpc_name": "M89",
+                "partition_name": "S56",
                 "password": {
                     "type": "env",
                     "key": "IOSHMC3_PASSWORD"
