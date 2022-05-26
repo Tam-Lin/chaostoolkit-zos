@@ -95,22 +95,22 @@ Or, to use the ssh interface, provided by ZOAU, you could specify
 
 ```json
 {
-  "secrets": {
-    "zos_console": {
-      "S5C": {
-        "method": "ssh",
-        "hostname": "pksts5c.pok.stglabs.ibm.com",
-        "userid": {
-          "type": "env",
-          "key": "S5C_USERID"
-        },
-        "password": {
-          "type": "env",
-          "key": "S5C_PASSWORD"
+    "secrets": {
+        "zos_console": {
+            "S5C": {
+                "method": "ssh",
+                "hostname": "pksts5c.pok.stglabs.ibm.com",
+                "userid": {
+                    "type": "env",
+                    "key": "S5C_USERID"
+                },
+                "password": {
+                    "type": "env",
+                    "key": "S5C_PASSWORD"
+                }
+            }
         }
-      }
     }
-  }
 }
 ```
 

@@ -7,3 +7,5 @@ pytest-cov
 pytest-sugar
 requests_mock
 cryptography
+twine
+build
