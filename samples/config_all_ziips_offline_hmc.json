@@ -1,0 +1,87 @@
+{
+    "version": "1.0.0",
+    "title": "What happens if I run out of zIIP capacity?",
+    "description": "Even if I have no zIIPs, my system should still function.",
+    "tags": [
+        "zos",
+        "ziip"
+    ],
+    "steady-state-hypothesis": {
+        "title": "System Responds",
+        "probes": [
+            {
+                "type": "probe",
+                "name": "zos-is-responding",
+                "tolerance": true,
+                "provider": {
+                    "type": "python",
+                    "module": "chaoszos.zos.probes",
+                    "func": "is_responding",
+                    "secrets": [
+                        "zos_console"
+                    ],
+                    "arguments": {
+                        "location": "S56"
+                    }
+                }
+            }
+        ]
+    },
+    "method": [
+        {
+            "type": "action",
+            "name": "configure_all_ziips_offline",
+            "provider": {
+                "type": "python",
+                "module": "chaoszos.zos.actions",
+                "func": "configure_processors",
+                "secrets": [
+                    "zos_console"
+                ],
+                "arguments": {
+                    "location": "S56",
+                    "processor_type_to_change": "ziip",
+                    "status_to_change_to": "offline"
+                }
+            }
+        }
+    ],
+    "rollbacks": [
+        {
+            "type": "action",
+            "name": "configure_all_ziips_online",
+            "provider": {
+                "type": "python",
+                "secrets": [
+                    "zos_console"
+                ],
+                "module": "chaoszos.zos.actions",
+                "func": "configure_processors",
+                "arguments": {
+                    "location": "S56",
+                    "processor_type_to_change": "ziip",
+                    "status_to_change_to": "online"
+                }
+            }
+        }
+    ],
+    "secrets": {
+        "zos_console": {
+            "S56": {
+                "method": "hmc",
+                "hostname": "ioshmc3.pok.stglabs.ibm.com",
+                "userid": {
+                    "type": "env",
+                    "key": "IOSHMC3_USERID"
+                },
+                "cpc_name": "M89",
+                "partition_name": "S56",
+                "password": {
+                    "type": "env",
+                    "key": "IOSHMC3_PASSWORD"
+                }
+            }
+        }
+    }
+}
+
