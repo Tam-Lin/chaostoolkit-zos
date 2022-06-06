@@ -9,3 +9,5 @@ requests_mock
 cryptography
 twine
 build
+isort
+black
