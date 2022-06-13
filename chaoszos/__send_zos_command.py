@@ -1,6 +1,7 @@
 import sys
 
 import zhmcclient
+import paramiko
 
 from chaoslib.exceptions import InterruptExecution
 
@@ -38,7 +39,7 @@ class Send_Command():
         if connection_information["method"] == "hmc":
 
             # Print metadata for each OS message, before each message
-            PRINT_METADATA = False
+            PRINT_METADATA = True
 
             hmc = connection_information["hostname"]
             userid = connection_information["userid"]
@@ -127,14 +128,12 @@ class Send_Command():
 
         elif connection_information["method"] == "ssh":
 
-            from paramiko import SSHClient, SSHException
-
             hostname = connection_information["hostname"]
             userid = connection_information["userid"]
             password = connection_information.get("password")
 
             try:
-                client = SSHClient()
+                client = paramiko.SSHClient()
                 client.load_system_host_keys()
                 client.connect(hostname=hostname, username=userid, password=password)
             except SSHException:
@@ -147,15 +146,17 @@ class Send_Command():
 
             stdin, stdout, stderr = client.exec_command(string_to_send)
 
+            #This works in version 1.1.1 of zoau; need to validate with other versions,
+            # as the format seems to have changed
             for line in stdout:
-                self.message_out.append(line.rstrip())
+                self.message_out.append(line[42:].strip())
 
             logger.debug(self.message_out)
 
             client.close()
 
-            self.message_out.pop(0)
-            self.message_out.pop(0)
+            while message_to_watch_for not in self.message_out[0]:
+                self.message_out.pop(0)
 
         else:
             raise InterruptExecution("Invalid connection method specified")
