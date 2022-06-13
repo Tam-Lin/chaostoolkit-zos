@@ -8,7 +8,7 @@ from chaoslib.discovery.discover import (discover_actions, discover_probes)
 from chaoslib.types import (DiscoveredActivities, Secrets)
 
 
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 __all__ = ["__version__", "get_connection_information", "load_exported_activities"]
 
 
