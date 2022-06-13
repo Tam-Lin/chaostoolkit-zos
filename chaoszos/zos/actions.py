@@ -74,7 +74,7 @@ def configure_processors(configuration: Configuration = None,
     processors_remaining_to_change = processor_count_to_change
 
     logger.debug("Changing %s processors of type %s to %s" %
-                 (processors_remaining_to_change,
+                 ((processors_remaining_to_change or "all"),
                   processor_type_to_change,
                   status_to_change_to))
 

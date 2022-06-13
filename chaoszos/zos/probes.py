@@ -24,7 +24,7 @@ def is_responding(configuration: Configuration = None,
     if location is None or location == "":
         raise InterruptExecution("No target specified for action")
 
-    logger.debug(location)
+    logger.debug("Checking to see if %s is available" % location)
 
     try:
         Send_Command(location, secrets[location], "D R,R", "IEE112I")
