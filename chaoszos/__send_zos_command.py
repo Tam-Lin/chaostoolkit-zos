@@ -142,21 +142,34 @@ class Send_Command():
 
             string_to_send = ('bash -l -c \'opercmd -- \"%s\"\'' % self.command_to_send)
 
-            logger.debug(string_to_send)
+            logger.debug("Sending command %s" % string_to_send)
 
             stdin, stdout, stderr = client.exec_command(string_to_send)
 
-            #This works in version 1.1.1 of zoau; need to validate with other versions,
-            # as the format seems to have changed
+            '''Turns out there are multiple versions of opercmd, some homegrown.
+               Trying to write something that will work with all the output formats
+               I've seen so far.
+            '''
+
+            header_message_seen = False
+            header_message_start_location = None
+
             for line in stdout:
-                self.message_out.append(line[42:].strip())
+
+                if message_to_watch_for in line:
+                    header_message_seen = True
+                    header_message_start_location = line.find(message_to_watch_for)
+                    logger.debug("Saw %s starting at position %s" %
+                                 (message_to_watch_for, header_message_start_location))
+
+                if header_message_seen:
+                    self.message_out.append(line[header_message_start_location:].strip())
+                else:
+                    logger.debug("Ignoring %s" % line)
 
             logger.debug(self.message_out)
 
             client.close()
-
-            while message_to_watch_for not in self.message_out[0]:
-                self.message_out.pop(0)
 
         else:
             raise InterruptExecution("Invalid connection method specified")
