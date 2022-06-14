@@ -1,22 +1,25 @@
 import sys
 
-import zhmcclient
 import paramiko
-
+import zhmcclient
 from chaoslib.exceptions import InterruptExecution
-
 from logzero import logger
 
 
-class Send_Command():
+class Send_Command:
     """
     Send a command to z/OS.  Because there are a bunch of different ways to do this,
     this gets sort of ugly.
     May want to abstract this to its own class/library at some point.
     """
 
-    def __init__(self, location: str = None, connection_information: dict = None,
-                 command_to_send=None, message_to_watch_for=None):
+    def __init__(
+        self,
+        location: str = None,
+        connection_information: dict = None,
+        command_to_send=None,
+        message_to_watch_for=None,
+    ):
 
         """
         Sends a command to z/OS
@@ -61,8 +64,9 @@ class Send_Command():
             try:
                 cpc = cl.cpcs.find(name=cpcname)
             except zhmcclient.NotFound:
-                raise InterruptExecution("Could not find CPC %s on HMC %s" %
-                                         (cpcname, hmc))
+                raise InterruptExecution(
+                    "Could not find CPC %s on HMC %s" % (cpcname, hmc)
+                )
 
             try:
                 if cpc.dpm_enabled:
@@ -72,11 +76,14 @@ class Send_Command():
                     partkind = "LPAR"
                     partition = cpc.lpars.find(name=partname)
             except zhmcclient.NotFound:
-                raise InterruptExecution("Could not find %s %s on CPC %s" %
-                                         (partkind, partname, cpcname))
+                raise InterruptExecution(
+                    "Could not find %s %s on CPC %s" % (partkind, partname, cpcname)
+                )
 
-            logger.info("Sending command %s for %s %s on CPC %s ..." %
-                        (command_to_send, partkind, partname, cpcname))
+            logger.info(
+                "Sending command %s for %s %s on CPC %s ..."
+                % (command_to_send, partkind, partname, cpcname)
+            )
 
             if message_to_watch_for is not None:
                 topic = partition.open_os_message_channel(include_refresh_messages=True)
@@ -94,17 +101,18 @@ class Send_Command():
             if message_to_watch_for is not None:
                 try:
                     for headers, message in receiver.notifications():
-                        os_msg_list = message['os-messages']
+                        os_msg_list = message["os-messages"]
                         for os_msg in os_msg_list:
                             if PRINT_METADATA:
-                                msg_id = os_msg['message-id']
-                                held = os_msg['is-held']
-                                priority = os_msg['is-priority']
-                                prompt = os_msg.get('prompt-text', None)
-                                logger.debug("# OS message %s (held: %s, priority: %s, "
-                                             "prompt: %r):" %
-                                             (msg_id, held, priority, prompt))
-                            msg_txt = os_msg['message-text'].strip('\n')
+                                msg_id = os_msg["message-id"]
+                                held = os_msg["is-held"]
+                                priority = os_msg["is-priority"]
+                                prompt = os_msg.get("prompt-text", None)
+                                logger.debug(
+                                    "# OS message %s (held: %s, priority: %s, "
+                                    "prompt: %r):" % (msg_id, held, priority, prompt)
+                                )
+                            msg_txt = os_msg["message-text"].strip("\n")
                             os_msg_id = msg_txt.split()[0]
                             sys.stdout.flush()
                             if os_msg_id == message_to_watch_for:
@@ -114,8 +122,10 @@ class Send_Command():
                     logger.debug("Keyboard interrupt - leaving receiver loop")
                     sys.stdout.flush()
                 except NameError:
-                    logger.debug("Message with ID %s occurred - leaving receiver loop" %
-                                 message_to_watch_for)
+                    logger.debug(
+                        "Message with ID %s occurred - leaving receiver loop"
+                        % message_to_watch_for
+                    )
                     sys.stdout.flush()
                 finally:
                     logger.info("Closing receiver...")
@@ -136,20 +146,19 @@ class Send_Command():
                 client = paramiko.SSHClient()
                 client.load_system_host_keys()
                 client.connect(hostname=hostname, username=userid, password=password)
-            except SSHException:
-                logger.warning("SSH Exception")
-                raise ()
+            except paramiko.SSHException:
+                logger.exception("SSH Exception")
 
-            string_to_send = ('bash -l -c \'opercmd -- \"%s\"\'' % self.command_to_send)
+            string_to_send = "bash -l -c 'opercmd -- \"%s\"'" % self.command_to_send
 
             logger.debug("Sending command %s" % string_to_send)
 
             stdin, stdout, stderr = client.exec_command(string_to_send)
 
-            '''Turns out there are multiple versions of opercmd, some homegrown.
+            """Turns out there are multiple versions of opercmd, some homegrown.
                Trying to write something that will work with all the output formats
                I've seen so far.
-            '''
+            """
 
             header_message_seen = False
             header_message_start_location = None
@@ -159,11 +168,15 @@ class Send_Command():
                 if message_to_watch_for in line:
                     header_message_seen = True
                     header_message_start_location = line.find(message_to_watch_for)
-                    logger.debug("Saw %s starting at position %s" %
-                                 (message_to_watch_for, header_message_start_location))
+                    logger.debug(
+                        "Saw %s starting at position %s"
+                        % (message_to_watch_for, header_message_start_location)
+                    )
 
                 if header_message_seen:
-                    self.message_out.append(line[header_message_start_location:].strip())
+                    self.message_out.append(
+                        line[header_message_start_location:].strip()
+                    )
                 else:
                     logger.debug("Ignoring %s" % line)
 

@@ -1,17 +1,15 @@
-from chaoslib.types import Configuration, Secrets
-
-from logzero import logger
-
 from chaoslib.exceptions import InterruptExecution
+from chaoslib.types import Configuration, Secrets
+from logzero import logger
 
 from chaoszos.__send_zos_command import Send_Command
 
 __all__ = ["is_responding"]
 
 
-def is_responding(configuration: Configuration = None,
-                  secrets: Secrets = None,
-                  location: str = None):
+def is_responding(
+    configuration: Configuration = None, secrets: Secrets = None, location: str = None
+):
     """
     Checks to make sure that a system is responsive
 

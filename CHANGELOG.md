@@ -7,6 +7,8 @@
 ### Fixed
 
 - Turns out there are homegrown versions of opercmd.  Trying to make parsing what opermcd returns as generic as possible.
+- Fix various lint violations
+
 ## [0.2.0][]
 
 [0.2.0]: https://github.com/Tam-Lin/chaostoolkit-zos/tree/0.2.0

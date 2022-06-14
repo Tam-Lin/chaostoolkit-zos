@@ -4,11 +4,10 @@
 
 from typing import Dict, List
 
-from chaoslib.discovery.discover import (discover_actions, discover_probes)
-from chaoslib.types import (DiscoveredActivities, Secrets)
+from chaoslib.discovery.discover import discover_actions, discover_probes
+from chaoslib.types import DiscoveredActivities, Secrets
 
-
-__version__ = '0.2.0'
+__version__ = "0.2.0"
 __all__ = ["__version__", "get_connection_information", "load_exported_activities"]
 
 
@@ -24,7 +23,7 @@ def get_connection_information(secrets: Secrets = None) -> Dict[str, str]:
     connection_information = dict(zos_console=None)
 
     if secrets():
-        connection_information['zos_console'] = secrets.get("zos_console")
+        connection_information["zos_console"] = secrets.get("zos_console")
 
     return connection_information
 
