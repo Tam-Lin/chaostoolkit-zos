@@ -11,3 +11,5 @@ twine
 build
 isort
 black
+tox
+tox-pyenv
